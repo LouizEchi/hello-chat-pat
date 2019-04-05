@@ -1,0 +1,21 @@
+{
+  "name": "hello-chat-express",
+  "version": "1.0.0",
+  "description": "A simple express server in using Pat's API",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "patai",
+    "pat"
+  ],
+  "author": "Louiz Echiverri",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4"
+  }
+}
