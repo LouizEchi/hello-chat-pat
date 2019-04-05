@@ -20,13 +20,9 @@ app.post("/chat", sendChatMessage);
  */
 async function initialize(_, res) {
   try {
-    const response = await axios.get(`${url}/authenticate`, {
-      params: {
-        client: encodeURI(client),
-        secret: encodeURI(secret),
-        response_type: "code"
-      }
-    });
+    const response = await axios.get(
+      `${url}/authenticate?client=${client}&secret=${secret}&response_type=code`
+    );
 
     const { auth_token } = response.data.data;
     if (!auth_token) {
@@ -35,16 +31,41 @@ async function initialize(_, res) {
         message: "Unauthorized access"
       };
     }
+
+    /**
+     *
+     * Preloading conversations can initialize the session with Pat knowing
+     */
+    const preloaded_conversation = ["the shark bit the surfer"];
+
+    let user_key = "";
+    for (const data_to_match of preloaded_conversation) {
+      const data = JSON.stringify({
+        data_to_match,
+        user_key
+      });
+      const response = await axios.post(`${url}/converse`, data, {
+        headers: {
+          Authorization: auth_token,
+          "Content-Type": "application/json"
+        }
+      });
+      const { user_key: key } = response.data.data;
+      user_key = key;
+    }
+
     res.status(200);
     res.json({
       success: true,
-      token: auth_token
+      token: auth_token,
+      user_key
     });
-  } catch (e) {
+  } catch (error) {
     res.status(error.statusCode || 500);
+    const message = error.data ? error.data.message : error.message;
     res.json({
       success: false,
-      error: error.message
+      error: message
     });
   } finally {
     res.end();
@@ -99,14 +120,14 @@ async function sendChatMessage(req, res) {
     } = converse_response.CurrentResponse;
 
     /*
-     * For this sample we will use ContentFound to identify if pat
+     * For this sample we will use NothingFound to identify if pat got the sentence
      */
-    const success = ConverseResultData.ContentFound;
+    const success = !ConverseResultData.NothingFound;
 
     if (success) {
-      res.status(400);
-    } else {
       res.status(200);
+    } else {
+      res.status(400);
     }
 
     res.json({
@@ -115,7 +136,6 @@ async function sendChatMessage(req, res) {
       message: WhatSaid
     });
   } catch (error) {
-    console.log(error);
     /*
       Handle errors
     */

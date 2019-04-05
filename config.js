@@ -4,17 +4,17 @@ const port = process.env.PORT || 8080;
 /**
  * The API for Pat
  */
-const url = process.env.PAT_URL;
+const url = "URL HERE;
 
 /*
  *  The Client Id you were provided with by PAT
  */
-const client = process.env.CLIENT;
+const client = "CLIENT";
 
 /*
  *  The Secret you were provided with by PAT
  */
-const secret = process.env.SECRET;
+const secret = "SECRET";
 
 module.exports = {
   port,
