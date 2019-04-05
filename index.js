@@ -4,30 +4,14 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const axios = require("axios");
 
-/* Intialize your server */
+const { port, url, client, secret } = require("./config");
+
+/* Initialize your server */
 const app = express().use(bodyParser());
-
-/* Port of your API */
-const port = process.env.PORT || 8080;
-
-/**
- * The API for Pat
- */
-const url = process.env.PAT_URL || "https://app.pat.ai/api/public/v1";
-/*
- *  The Client Id you were provided with by PAT
- */
-const client = process.env.CLIENT;
-
-/*
- *  The Secret you were provided with by PAT
- */
-const secret = process.env.SECRET;
-
 /*
  * Setup Express Routes
  */
-app.get("/initialize", initialize);
+app.get("/init", initialize);
 app.post("/chat", sendChatMessage);
 
 /**
@@ -78,7 +62,7 @@ async function sendChatMessage(req, res) {
 
   try {
     const {
-      authorization: Authorization // Retrieved during authenticate
+      authorization: Authorization // Retrieved during initialization
     } = req.headers;
 
     const data = JSON.stringify({
@@ -133,8 +117,8 @@ async function sendChatMessage(req, res) {
   } catch (error) {
     console.log(error);
     /*
-    Handle errors
-  */
+      Handle errors
+    */
     res.status(error.statusCode || 500);
     const errors =
       error.response && error.response.data.errors
